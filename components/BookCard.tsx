@@ -1,4 +1,7 @@
+import Link from "next/link";
+
 type BookCardProps = {
+  id: string;
   title: string;
   author: string;
   cover: string;
@@ -6,13 +9,14 @@ type BookCardProps = {
 };
 
 export default function BookCard({
+  id,
   title,
   author,
   cover,
   progress,
 }: BookCardProps) {
   return (
-    <article className="group">
+    <Link href={`/library/${id}`} className="group block">
       <div className="relative aspect-[2/3] overflow-hidden rounded-2xl bg-[#E8E0D7] shadow-sm ring-1 ring-black/5 transition duration-300 group-hover:-translate-y-1 group-hover:shadow-md">
         <img
           src={cover}
@@ -37,6 +41,6 @@ export default function BookCard({
       </h3>
 
       <p className="mt-1 line-clamp-1 text-sm text-[#756B65]">{author}</p>
-    </article>
+    </Link>
   );
 }
