@@ -1,19 +1,47 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useState } from "react";
+import { getBookById } from "@/data/books";
+import ProgressSlider from "@/components/ProgressSlider";
+import ReadingStatus, {
+  type ReadingStatusValue,
+} from "@/components/ReadingStatus";
 
-type BookPageProps = {
-  params: Promise<{
-    id: string;
-  }>;
-};
+export default function BookPage() {
+  const params = useParams();
 
-export default async function BookPage({ params }: BookPageProps) {
-  const { id } = await params;
+  const id = params.id as string;
 
-  const bookName = id
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+  const book = getBookById(id);
+
+  const [progress, setProgress] = useState(book?.progress ?? 0);
+
+  const [status, setStatus] = useState<ReadingStatusValue>(
+    book?.status ?? "want-to-read",
+  );
+
+  const [currentPage, setCurrentPage] = useState(book?.currentPage ?? 0);
+
+  if (!book) {
+    return (
+      <main className="min-h-screen bg-[#F8F3EA] px-6 py-10 text-[#332D2A]">
+        <div className="mx-auto max-w-4xl">
+          <Link
+            href="/library"
+            className="inline-flex items-center gap-2 text-sm text-[#756B65]"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Library
+          </Link>
+
+          <h1 className="mt-10 font-serif text-4xl">Book not found</h1>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#F8F3EA] text-[#332D2A]">
@@ -27,34 +55,90 @@ export default async function BookPage({ params }: BookPageProps) {
         </Link>
 
         <section className="mt-10 grid gap-10 md:grid-cols-[280px_1fr] md:items-start">
-          <div className="aspect-[2/3] rounded-3xl bg-[#E8E0D7] shadow-sm ring-1 ring-black/5">
-            <div className="flex h-full flex-col items-center justify-center p-8 text-center">
-              <BookOpen className="h-12 w-12 text-[#9B8F87]" />
-
-              <p className="mt-4 text-sm text-[#9B8F87]">Book cover</p>
-            </div>
+          <div className="overflow-hidden rounded-3xl bg-[#E8E0D7] shadow-sm ring-1 ring-black/5">
+            <img
+              src={book.cover}
+              alt={`Cover of ${book.title}`}
+              className="aspect-[2/3] h-full w-full object-cover"
+            />
           </div>
 
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-[#9B8F87]">
-              Your book
+              {book.status === "currently-reading"
+                ? "Currently reading"
+                : book.status === "read"
+                  ? "Read"
+                  : "Want to read"}
             </p>
 
             <h1 className="mt-3 font-serif text-5xl leading-tight">
-              {bookName}
+              {book.title}
             </h1>
 
-            <p className="mt-3 text-lg text-[#756B65]">
-              Book details will appear here.
-            </p>
+            <p className="mt-3 text-lg text-[#756B65]">{book.author}</p>
 
-            <div className="mt-8 rounded-3xl bg-white/70 p-6 ring-1 ring-black/5">
-              <p className="text-sm leading-6 text-[#756B65]">
-                This page will eventually contain the book's cover, author,
-                rating, reading status, progress, notes, reading sessions,
-                dates, and personal thoughts.
+            <section className="mt-10 rounded-3xl bg-white/70 p-6 ring-1 ring-black/5">
+              <ReadingStatus value={status} onChange={setStatus} />
+
+              <div className="my-6 h-px bg-black/5" />
+
+              <ProgressSlider
+                value={progress}
+                onChange={(value) => {
+                  setProgress(value);
+
+                  const page = Math.round((value / 100) * book.totalPages);
+
+                  setCurrentPage(page);
+                }}
+              />
+
+              <div className="mt-6 flex items-center justify-between border-t border-black/5 pt-5">
+                <div>
+                  <p className="text-sm text-[#756B65]">Current page</p>
+
+                  <input
+                    type="number"
+                    min="0"
+                    max={book.totalPages}
+                    value={currentPage}
+                    onChange={(event) => {
+                      const page = Number(event.target.value);
+
+                      const clampedPage = Math.min(
+                        Math.max(page, 0),
+                        book.totalPages,
+                      );
+
+                      setCurrentPage(clampedPage);
+
+                      const newProgress = Math.round(
+                        (clampedPage / book.totalPages) * 100,
+                      );
+
+                      setProgress(newProgress);
+                    }}
+                    className="mt-1 w-24 bg-transparent font-serif text-2xl outline-none"
+                  />
+                </div>
+
+                <div className="text-right">
+                  <p className="text-sm text-[#756B65]">Total pages</p>
+
+                  <p className="mt-1 font-serif text-2xl">{book.totalPages}</p>
+                </div>
+              </div>
+            </section>
+
+            <section className="mt-5 rounded-3xl bg-white/70 p-6 ring-1 ring-black/5">
+              <h2 className="font-serif text-2xl">Reading activity</h2>
+
+              <p className="mt-3 text-sm leading-6 text-[#756B65]">
+                Your reading sessions, notes, and thoughts about this book will
+                appear here.
               </p>
-            </div>
+            </section>
           </div>
         </section>
       </div>

@@ -1,50 +1,10 @@
 import { Plus, Search } from "lucide-react";
 import BookCard from "@/components/BookCard";
+import { books } from "@/data/books";
 
-const currentlyReading = [
-  {
-    id: "night-circus",
-    title: "The Night Circus",
-    author: "Erin Morgenstern",
-    cover: "https://covers.openlibrary.org/b/isbn/9780307744432-L.jpg",
-    progress: 67,
-  },
-  {
-    id: "tomorrow-tomorrow",
-    title: "Tomorrow, and Tomorrow, and Tomorrow",
-    author: "Gabrielle Zevin",
-    cover: "https://covers.openlibrary.org/b/isbn/9780593321201-L.jpg",
-    progress: 34,
-  },
-];
-
-const books = [
-  {
-    id: "night-circus",
-    title: "The Night Circus",
-    author: "Erin Morgenstern",
-    cover: "https://covers.openlibrary.org/b/isbn/9780307744432-L.jpg",
-    progress: 67,
-  },
-  {
-    id: "tomorrow-tomorrow",
-    title: "Tomorrow, and Tomorrow, and Tomorrow",
-    author: "Gabrielle Zevin",
-    cover: "https://covers.openlibrary.org/b/isbn/9780593321201-L.jpg",
-  },
-  {
-    id: "evelyn-hugo",
-    title: "The Seven Husbands of Evelyn Hugo",
-    author: "Taylor Jenkins Reid",
-    cover: "https://covers.openlibrary.org/b/isbn/9781501139239-L.jpg",
-  },
-  {
-    id: "piranesi",
-    title: "Piranesi",
-    author: "Susanna Clarke",
-    cover: "https://covers.openlibrary.org/b/isbn/9781526622440-M.jpg",
-  },
-];
+const currentlyReading = books.filter(
+  (book) => book.status === "currently-reading",
+);
 
 export default function LibraryPage() {
   return (
