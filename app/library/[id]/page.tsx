@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { getBookById } from "@/data/books";
@@ -9,6 +9,9 @@ import ProgressSlider from "@/components/ProgressSlider";
 import ReadingStatus, {
   type ReadingStatusValue,
 } from "@/components/ReadingStatus";
+import ReadingSessionForm from "@/components/ReadingSessionForm";
+import ReadingSessionList from "@/components/ReadingSessionList";
+import type { ReadingSession } from "@/data/books";
 
 export default function BookPage() {
   const params = useParams();
@@ -24,6 +27,47 @@ export default function BookPage() {
   );
 
   const [currentPage, setCurrentPage] = useState(book?.currentPage ?? 0);
+
+  const [sessions, setSessions] = useState<ReadingSession[]>([]);
+  const [showSessionForm, setShowSessionForm] = useState(false);
+
+  function handleAddSession(data: {
+    pagesRead: number;
+    duration: number;
+    note: string;
+  }) {
+    if (!book) return;
+    const startPage = currentPage;
+
+    const endPage = Math.min(startPage + data.pagesRead, book.totalPages);
+
+    const actualPagesRead = endPage - startPage;
+
+    const newSession: ReadingSession = {
+      id: crypto.randomUUID(),
+      bookId: book.id,
+      date: new Date().toLocaleDateString("en-CA", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+      startPage,
+      endPage,
+      pagesRead: actualPagesRead,
+      duration: data.duration,
+      note: data.note,
+    };
+
+    setSessions((previous) => [newSession, ...previous]);
+
+    setCurrentPage(endPage);
+
+    const newProgress = Math.round((endPage / book.totalPages) * 100);
+
+    setProgress(newProgress);
+
+    setShowSessionForm(false);
+  }
 
   if (!book) {
     return (
@@ -131,13 +175,38 @@ export default function BookPage() {
               </div>
             </section>
 
-            <section className="mt-5 rounded-3xl bg-white/70 p-6 ring-1 ring-black/5">
-              <h2 className="font-serif text-2xl">Reading activity</h2>
+            <section className="mt-5">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.15em] text-[#9B8F87]">
+                    Reading activity
+                  </p>
 
-              <p className="mt-3 text-sm leading-6 text-[#756B65]">
-                Your reading sessions, notes, and thoughts about this book will
-                appear here.
-              </p>
+                  <h2 className="mt-1 font-serif text-3xl">Your sessions</h2>
+                </div>
+
+                {!showSessionForm && currentPage < book.totalPages && (
+                  <button
+                    type="button"
+                    onClick={() => setShowSessionForm(true)}
+                    className="inline-flex items-center gap-2 rounded-full bg-[#332D2A] px-5 py-3 text-sm text-white transition hover:opacity-90"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Log session
+                  </button>
+                )}
+              </div>
+
+              {showSessionForm && (
+                <ReadingSessionForm
+                  currentPage={currentPage}
+                  totalPages={book.totalPages}
+                  onCancel={() => setShowSessionForm(false)}
+                  onSubmit={handleAddSession}
+                />
+              )}
+
+              <ReadingSessionList sessions={sessions} />
             </section>
           </div>
         </section>

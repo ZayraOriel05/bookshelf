@@ -55,3 +55,16 @@ export const books: Book[] = [
 export function getBookById(id: string) {
   return books.find((book) => book.id === id);
 }
+
+export type ReadingSession = {
+  id: string;
+  bookId: string;
+  date: string;
+  startPage: number;
+  endPage: number;
+  pagesRead: number;
+  duration: number;
+  note: string;
+};
+
+export const readingSessions: ReadingSession[] = [];
