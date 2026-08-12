@@ -50,11 +50,7 @@ export default function BookPage() {
     const newSession: ReadingSession = {
       id: crypto.randomUUID(),
       bookId: book.id,
-      date: new Date().toLocaleDateString("en-CA", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }),
+      date: new Date().toISOString(),
       startPage,
       endPage,
       pagesRead: actualPagesRead,

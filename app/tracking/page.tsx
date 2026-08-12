@@ -2,6 +2,7 @@
 
 import { useReading } from "@/context/ReadingContext";
 import { books } from "@/data/books";
+import ReadingActivity from "@/components/ReadingActivity";
 
 function formatMinutes(minutes: number) {
   const hours = Math.floor(minutes / 60);
@@ -20,6 +21,10 @@ function formatMinutes(minutes: number) {
 
 export default function TrackingPage() {
   const { sessions } = useReading();
+
+  const readingDays = new Set(
+    sessions.map((session) => new Date(session.date).toDateString()),
+  ).size;
 
   const pagesRead = sessions.reduce(
     (total, session) => total + session.pagesRead,
@@ -53,7 +58,7 @@ export default function TrackingPage() {
           </p>
         </header>
 
-        <section className="mt-10 grid gap-4 sm:grid-cols-3">
+        <section className="mt-10 grid gap-4 sm:grid-cols-4">
           <div className="rounded-3xl bg-white/70 p-6 ring-1 ring-black/5">
             <p className="text-sm text-[#756B65]">Pages read</p>
 
@@ -73,7 +78,14 @@ export default function TrackingPage() {
 
             <p className="mt-2 font-serif text-4xl">{sessions.length}</p>
           </div>
+
+          <div className="rounded-3xl bg-white/70 p-6 ring-1 ring-black/5">
+            <p className="text-sm text-[#756B65]">Reading days</p>
+
+            <p className="mt-2 font-serif text-4xl">{readingDays}</p>
+          </div>
         </section>
+        <ReadingActivity sessions={sessions} />
 
         <section className="mt-10">
           <div>

@@ -30,7 +30,13 @@ export default function ReadingSessionList({
         >
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm text-[#9B8F87]">{session.date}</p>
+              <p className="text-sm text-[#9B8F87]">
+                {new Date(session.date).toLocaleDateString("en-CA", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </p>
 
               <p className="mt-1 font-serif text-xl">
                 Pages {session.startPage} → {session.endPage}
