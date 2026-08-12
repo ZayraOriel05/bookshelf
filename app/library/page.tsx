@@ -1,4 +1,44 @@
-import { BookOpen, Plus, Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
+import BookCard from "@/components/BookCard";
+
+const currentlyReading = [
+  {
+    title: "The Night Circus",
+    author: "Erin Morgenstern",
+    cover: "https://covers.openlibrary.org/b/isbn/9780307744432-L.jpg",
+    progress: 67,
+  },
+  {
+    title: "Tomorrow, and Tomorrow, and Tomorrow",
+    author: "Gabrielle Zevin",
+    cover: "https://covers.openlibrary.org/b/isbn/9780593321201-L.jpg",
+    progress: 34,
+  },
+];
+
+const books = [
+  {
+    title: "The Night Circus",
+    author: "Erin Morgenstern",
+    cover: "https://covers.openlibrary.org/b/isbn/9780307744432-L.jpg",
+    progress: 67,
+  },
+  {
+    title: "Tomorrow, and Tomorrow, and Tomorrow",
+    author: "Gabrielle Zevin",
+    cover: "https://covers.openlibrary.org/b/isbn/9780593321201-L.jpg",
+  },
+  {
+    title: "The Seven Husbands of Evelyn Hugo",
+    author: "Taylor Jenkins Reid",
+    cover: "https://covers.openlibrary.org/b/isbn/9781501139239-L.jpg",
+  },
+  {
+    title: "Piranesi",
+    author: "Susanna Clarke",
+    cover: "https://covers.openlibrary.org/b/isbn/9781526622440-M.jpg",
+  },
+];
 
 export default function LibraryPage() {
   return (
@@ -39,25 +79,37 @@ export default function LibraryPage() {
         </div>
 
         <section className="mt-10">
-          <div className="flex flex-col items-center justify-center rounded-3xl bg-white/60 px-6 py-20 text-center ring-1 ring-black/5">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#DDE8F5]">
-              <BookOpen className="h-7 w-7" strokeWidth={1.8} />
-            </div>
+          <div className="flex items-center justify-between">
+            <h2 className="font-serif text-2xl">Currently reading</h2>
 
-            <h2 className="mt-6 font-serif text-2xl">
-              Your shelves are waiting.
-            </h2>
+            <span className="text-sm text-[#9B8F87]">
+              {currentlyReading.length} books
+            </span>
+          </div>
 
-            <p className="mt-3 max-w-md text-sm leading-6 text-[#756B65]">
-              Add your first book and start building your reading world.
-            </p>
+          <div className="mt-5 grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {currentlyReading.map((book) => (
+              <BookCard key={book.title} {...book} />
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-14">
+          <div className="flex items-center justify-between">
+            <h2 className="font-serif text-2xl">Your shelves</h2>
 
             <button
               type="button"
-              className="mt-6 rounded-full bg-[#332D2A] px-6 py-3 text-sm font-medium text-white transition hover:opacity-90"
+              className="text-sm text-[#756B65] hover:text-[#332D2A]"
             >
-              Add your first book
+              View all
             </button>
+          </div>
+
+          <div className="mt-5 grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {books.map((book) => (
+              <BookCard key={book.title} {...book} />
+            ))}
           </div>
         </section>
       </div>
