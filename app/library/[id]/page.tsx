@@ -12,6 +12,7 @@ import ReadingStatus, {
 import ReadingSessionForm from "@/components/ReadingSessionForm";
 import ReadingSessionList from "@/components/ReadingSessionList";
 import type { ReadingSession } from "@/data/books";
+import { useReading } from "@/context/ReadingContext";
 
 export default function BookPage() {
   const params = useParams();
@@ -28,7 +29,10 @@ export default function BookPage() {
 
   const [currentPage, setCurrentPage] = useState(book?.currentPage ?? 0);
 
-  const [sessions, setSessions] = useState<ReadingSession[]>([]);
+  const { sessions, addSession } = useReading();
+  const bookSessions = book
+    ? sessions.filter((session) => session.bookId === book.id)
+    : [];
   const [showSessionForm, setShowSessionForm] = useState(false);
 
   function handleAddSession(data: {
@@ -58,7 +62,7 @@ export default function BookPage() {
       note: data.note,
     };
 
-    setSessions((previous) => [newSession, ...previous]);
+    addSession(newSession);
 
     setCurrentPage(endPage);
 
@@ -206,7 +210,7 @@ export default function BookPage() {
                 />
               )}
 
-              <ReadingSessionList sessions={sessions} />
+              <ReadingSessionList sessions={bookSessions} />
             </section>
           </div>
         </section>
