@@ -17,9 +17,12 @@ import { useReading } from "@/context/ReadingContext";
 export default function BookPage() {
   const params = useParams();
 
-  const id = params.id as string;
+  const { id } = useParams(); // change
 
-  const book = getBookById(id);
+  const { books, sessions, addSession, updateBookProgress, updateBookStatus } =
+    useReading();
+
+  const book = books.find((item) => item.id === id);
 
   const [progress, setProgress] = useState(book?.progress ?? 0);
 
@@ -27,9 +30,8 @@ export default function BookPage() {
     book?.status ?? "want-to-read",
   );
 
-  const [currentPage, setCurrentPage] = useState(book?.currentPage ?? 0);
+  const currentPage = book?.currentPage ?? 0;
 
-  const { sessions, addSession } = useReading();
   const bookSessions = book
     ? sessions.filter((session) => session.bookId === book.id)
     : [];
@@ -60,7 +62,7 @@ export default function BookPage() {
 
     addSession(newSession);
 
-    setCurrentPage(endPage);
+    updateBookProgress(book.id, endPage);
 
     const newProgress = Math.round((endPage / book.totalPages) * 100);
 
@@ -134,7 +136,7 @@ export default function BookPage() {
 
                   const page = Math.round((value / 100) * book.totalPages);
 
-                  setCurrentPage(page);
+                  updateBookProgress(book.id, page);
                 }}
               />
 
@@ -150,12 +152,13 @@ export default function BookPage() {
                     onChange={(event) => {
                       const page = Number(event.target.value);
 
+                      updateBookProgress(book.id, page);
                       const clampedPage = Math.min(
                         Math.max(page, 0),
                         book.totalPages,
                       );
 
-                      setCurrentPage(clampedPage);
+                      // setCurrentPage(clampedPage); // No need to set state if we're using a derived value
 
                       const newProgress = Math.round(
                         (clampedPage / book.totalPages) * 100,

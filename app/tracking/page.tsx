@@ -1,7 +1,6 @@
 "use client";
 
 import { useReading } from "@/context/ReadingContext";
-import { books } from "@/data/books";
 import ReadingActivity from "@/components/ReadingActivity";
 
 function formatMinutes(minutes: number) {
@@ -20,7 +19,7 @@ function formatMinutes(minutes: number) {
 }
 
 export default function TrackingPage() {
-  const { sessions } = useReading();
+  const { books, sessions } = useReading();
 
   const readingDays = new Set(
     sessions.map((session) => new Date(session.date).toDateString()),
